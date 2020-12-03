@@ -45,6 +45,9 @@ mosquitto:
   external: true
   external_address: tcp://MOSQUITTO_EXTERNAL_ADDRESS:MOSQUITTO_EXTERNAL_PORT
 
+  tls:
+    enabled: false
+    secret: 
   image:
     repository: eclipse-mosquitto
     pullPolicy: IfNotPresent
@@ -52,7 +55,7 @@ mosquitto:
   service:
      type: ClusterIP
      port: 1883
-
+     port-ssl: 8883
 
 redis:
    cluster:

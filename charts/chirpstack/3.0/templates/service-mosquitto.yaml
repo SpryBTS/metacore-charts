@@ -12,6 +12,12 @@ spec:
       targetPort: mosquitto
       protocol: TCP
       name: http
+    {{- if .Values.mosquitto.tls.enabled }}
+    - port: {{ .Values.mosquitto.service.port-ssl }}
+      targetPort: mosquitto-ssl
+      protocol: TCP
+      name: https
+    {{- end }}
   selector:
     {{- include "chirpstack.selectorLabels" . | nindent 4 }}
     app.kubernetes.io/instance: mosquitto

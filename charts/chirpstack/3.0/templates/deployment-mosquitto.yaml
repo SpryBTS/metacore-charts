@@ -41,10 +41,20 @@ spec:
           - name: config-volume
             mountPath: /etc/chirpstack-network-server/network-server.toml
             subPath: network-server.toml
+          {{- if .Values.mosquitto.tls.enabled }}
+          - mountPath: "/etc/nginx/ssl"
+            name: mosquitto-ssl
+            readOnly: true
+          {{- end }}
           ports:
             - name: mosquitto
               containerPort: {{ .Values.mosquitto.service.port }}
               protocol: TCP
+            {{- if .Values.mosquitto.tls.enabled }}
+            - name: mosquitto-ssl
+              containerPort: {{ .Values.mosquitto.service.port-ssl }}
+              protocol: TCP
+            {{- end }}
           livenessProbe:
             tcpSocket:
               port: {{ .Values.mosquitto.service.port }}
@@ -57,6 +67,11 @@ spec:
         - name: config-volume
           configMap:
             name: {{ include "chirpstack.fullname" . }}-mosquitto
+        {{- if .Values.mosquitto.tls.enabled }}
+        - name: mosquitto-ssl
+          secret:
+            secretName: {{ .Values.mosquitto.tls.secret }}
+        {{- end }}
       {{- with .Values.nodeSelector }}
       nodeSelector:
         {{- toYaml . | nindent 8 }}
